@@ -23,7 +23,7 @@ public struct InitCommand: CommandProtocol {
         let path = "\(self.directory)/muter.conf.json"
         let configuration = MuterConfiguration(executable: "absolute path to the executable that runs your tests",
                                                arguments: ["an argument the test runner needs", "another argument the test runner needs"],
-                                               excludeList: [])
+                                               excludeList: [], includeList: [])
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let data = try! encoder.encode(configuration)

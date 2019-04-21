@@ -61,7 +61,7 @@ public class RunCommandDelegate: RunCommandIODelegate {
         let workingDirectoryPath = createWorkingDirectory(in: temporaryDirectoryURL!)
         notificationCenter.post(name: .sourceFileDiscoveryStarted, object: temporaryDirectoryURL!)
 
-        let sourceFilePaths = discoverSourceFiles(inDirectoryAt: temporaryDirectoryURL!, excludingPathsIn: configuration.excludeList)
+        let sourceFilePaths = discoverSourceFiles(inDirectoryAt: temporaryDirectoryURL!, excludingPathsIn: configuration.excludeList, includingPathsIn: configuration.includeList)
         let swapFilePathsByOriginalPath = swapFilePaths(forFilesAt: sourceFilePaths, using: workingDirectoryPath)
         notificationCenter.post(name: .sourceFileDiscoveryFinished, object: sourceFilePaths)
 

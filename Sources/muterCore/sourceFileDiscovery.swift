@@ -11,10 +11,12 @@ private let defaultExcludeList = [
     "fastlane"
 ]
 
-func discoverSourceFiles(inDirectoryAt path: String, excludingPathsIn providedExcludeList: [String] = []) -> [String] {
+func discoverSourceFiles(inDirectoryAt path: String, excludingPathsIn providedExcludeList: [String] = [], includingPathsIn providedIncludeList: [String] = []) -> [String] {
     let excludeList = providedExcludeList + defaultExcludeList
+    let includeList = providedIncludeList
     let subpaths = FileManager.default.subpaths(atPath: path) ?? []
     return subpaths
+        .include(pathsContainingItems(from: includeList))
         .exclude(pathsContainingItems(from: excludeList))
         .include(swiftFiles)
         .map { path + "/" + $0 }
