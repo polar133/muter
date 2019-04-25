@@ -53,7 +53,13 @@ public struct RunCommandOptions: OptionsProtocol {
     let reporter: Reporter
     
     public init(shouldOutputJSON: Bool, shouldOutputXcode: Bool) {
-        if shouldOutputJSON {
+        var configuration: MuterConfiguration?
+
+        if let data = FileManager.default.contents(atPath: FileManager.default.currentDirectoryPath+"/muter.conf.json") {
+            configuration = try? JSONDecoder().decode(MuterConfiguration.self, from: data)
+        }
+
+        if shouldOutputJSON || configuration?.outputFile?.contains(".json") ?? false{
             reporter = .json
         } else if shouldOutputXcode {
             reporter = .xcode

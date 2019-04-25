@@ -71,19 +71,19 @@ class RunCommandObserver {
 
 extension RunCommandObserver {    
     func handleMuterLaunched(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             printHeader()
         }
     }
     
     func handleProjectCopyStarted(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             print("Copying your project to a temporary directory for testing")
         }
     }
 
     func handleProjectCopyFinished(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             print("Finished copying your project to a temporary directory for testing")
         }
     }
@@ -103,13 +103,13 @@ extension RunCommandObserver {
     }
 
     func handleSourceFileDiscoveryStarted(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             printMessage("Discovering source code in:\n\n\(notification.object as! String)")
         }
     }
 
     func handleSourceFileDiscoveryFinished(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             let discoveredFilePaths = notification.object as! [String]
             let filePaths = discoveredFilePaths.joined(separator: "\n")
             printMessage("Discovered \(discoveredFilePaths.count) Swift files:\n\n\(filePaths)")
@@ -117,13 +117,13 @@ extension RunCommandObserver {
     }
 
     func handleMutationOperatorDiscoveryStarted(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             print("Discovering applicable Mutation Operators in:\n\n\(notification.object as! String)")
         }
     }
 
     func handleMutationOperatorDiscoveryFinished(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             let discoveredMutationOperators = notification.object as! [MutationOperator]
 
             printMessage("Discovered \(discoveredMutationOperators.count) mutants to introduce:\n")
@@ -151,7 +151,7 @@ extension RunCommandObserver {
     }
 
     func handleMutationTestingStarted(notification: Notification) {
-        if reporter == .plainText {
+        if reporter != .xcode {
             printMessage("Mutation testing will now begin.\nRunning your test suite to determine a baseline for mutation testing")
         }
     }
@@ -159,16 +159,16 @@ extension RunCommandObserver {
     func handleNewMutationTestOutcomeAvailable(notification: Notification) {
         let values = notification.object as! (outcome: MutationTestOutcome, remainingOperatorsCount: Int)
         
-        if reporter == .plainText {
+        if reporter == .xcode {
+            print(reporter.generateReport(from: [values.outcome]))
+            flushStdOut()
+        } else {
             let fileName = URL(fileURLWithPath: values.outcome.filePath).lastPathComponent
 
             print("""
                 Testing mutation operator in \(fileName)
                 There are \(values.remainingOperatorsCount) left to apply
-            """)
-        } else if reporter == .xcode {
-            print(reporter.generateReport(from: [values.outcome]))
-            flushStdOut()
+                """)
         }
     }
 
@@ -181,6 +181,7 @@ extension RunCommandObserver {
         if reporter != .xcode { // xcode reports are generated in real-time, so don't report them once mutation testing has finished
             let outcomes = notification.object as! [MutationTestOutcome]
             print(reporter.generateReport(from: outcomes))
+            writeToFile(str: reporter.generateReport(from: outcomes))
         }
     }
 }
