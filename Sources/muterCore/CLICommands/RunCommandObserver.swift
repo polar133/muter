@@ -78,13 +78,13 @@ extension RunCommandObserver {
     
     func handleProjectCopyStarted(notification: Notification) {
         if reporter != .xcode {
-            print("Copying your project to a temporary directory for testing")
+            printMessage("Copying your project to a temporary directory for testing")
         }
     }
 
     func handleProjectCopyFinished(notification: Notification) {
         if reporter != .xcode {
-            print("Finished copying your project to a temporary directory for testing")
+            printMessage("Finished copying your project to a temporary directory for testing")
         }
     }
 
@@ -118,7 +118,7 @@ extension RunCommandObserver {
 
     func handleMutationOperatorDiscoveryStarted(notification: Notification) {
         if reporter != .xcode {
-            print("Discovering applicable Mutation Operators in:\n\n\(notification.object as! String)")
+            printMessage("Discovering applicable Mutation Operators in:\n\n\(notification.object as! String)")
         }
     }
 
@@ -131,7 +131,7 @@ extension RunCommandObserver {
             for (index, `operator`) in discoveredMutationOperators.enumerated() {
                 let listPosition = "\(index+1))"
                 let fileName = URL(fileURLWithPath: `operator`.filePath).lastPathComponent
-                print("\(listPosition) \(fileName)")
+                printMessage("\(listPosition) \(fileName)")
             }
         }
     }
@@ -165,7 +165,7 @@ extension RunCommandObserver {
         } else {
             let fileName = URL(fileURLWithPath: values.outcome.filePath).lastPathComponent
 
-            print("""
+            printMessage("""
                 Testing mutation operator in \(fileName)
                 There are \(values.remainingOperatorsCount) left to apply
                 """)
@@ -180,8 +180,8 @@ extension RunCommandObserver {
     func handleMutationTestingFinished(notification: Notification) {
         if reporter != .xcode { // xcode reports are generated in real-time, so don't report them once mutation testing has finished
             let outcomes = notification.object as! [MutationTestOutcome]
-            print(reporter.generateReport(from: outcomes))
-            writeToFile(str: reporter.generateReport(from: outcomes))
+            let result = reporter.generateReport(from: outcomes)
+            printMessage(result, true)
         }
     }
 }

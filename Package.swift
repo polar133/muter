@@ -14,16 +14,17 @@ let package = Package(
         .package(url: "https://github.com/Quick/Nimble", from: "7.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.1.0"),
         .package(url: "https://github.com/Carthage/Commandant.git", from: "0.15.0"),
-        .package(url: "https://github.com/thoughtbot/Curry.git", from: "4.0.2")
+        .package(url: "https://github.com/thoughtbot/Curry.git", from: "4.0.2"),
+        .package(url: "https://github.com/JohnSundell/Files.git", from: "2.2.1")
     ],
     targets: [
         .target(
             name: "muter",
-            dependencies: ["muterCore", "Commandant"]
+            dependencies: ["muterCore", "Commandant", "Files"]
         ),
         .target(
             name: "muterCore",
-            dependencies: ["SwiftSyntax", "Rainbow", "Commandant", "Curry"],
+            dependencies: ["SwiftSyntax", "Rainbow", "Commandant", "Curry", "Files"],
             path: "Sources/muterCore"
         ),        
         .target(

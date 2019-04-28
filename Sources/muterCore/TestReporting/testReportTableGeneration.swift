@@ -69,14 +69,15 @@ func applyMutationScoreColor(to rows: [CLITable.Row]) -> [CLITable.Row] {
 }
 
 func coloredMutationScore(for score: Int, appliedTo text: String) -> String {
-    switch score {
-    case 0...25:
-        return text.red
-    case 26...50:
-        return text.yellow
-    case 51...75:
-        return text.lightGreen
-    default:
-        return text.green
-    }
+    return text
+//    switch score {
+//    case 0...25:
+//        return text.red
+//    case 26...50:
+//        return text.yellow
+//    case 51...75:
+//        return text.lightGreen
+//    default:
+//        return text.green
+//    }
 }

@@ -1,5 +1,8 @@
 import Foundation
 import Rainbow
+import Files
+
+var path: Folder = Folder.current
 
 func printHeader() {
    
@@ -22,12 +25,16 @@ func printHeader() {
         +----------------------------------------------+
         
         """)
+    path = Folder.current
 }
 
-func printMessage(_ message: String) {
-    print("+-------------------+")
+func printMessage(_ message: String, _ toOutputFile: Bool = false) {
     print(message)
     print("")
+    if toOutputFile == true {
+        writeToFile(str: message)
+    }
+
 }
 
 func writeToFile(str: String) {
@@ -36,21 +43,24 @@ func writeToFile(str: String) {
         let configuration = try? JSONDecoder().decode(MuterConfiguration.self, from: data),
         configuration.outputFile != nil,
         !configuration.outputFile!.isEmpty else {
-            print("Error writing file")
+            print("no output file")
             return
     }
-
-    let pathDirectory = getDocumentsDirectory()
-    try? FileManager().createDirectory(at: pathDirectory, withIntermediateDirectories: true)
-    let filePath = pathDirectory.appendingPathComponent(configuration.outputFile!)
-
     do {
-        try str.write(to: filePath, atomically: true, encoding: String.Encoding.utf8)
+        let folder = path
+
+        let outputFolder = try folder.createSubfolderIfNeeded(withName: "output")
+        let file = try outputFolder.createFileIfNeeded(withName: configuration.outputFile!)
+        if configuration.outputFile!.contains(".json") {
+            let jsonData = str.data(using: .utf8)
+            let pathAsURL = URL(fileURLWithPath: file.path)
+            try jsonData!.write(to: pathAsURL)
+        } else {
+            try file.write(string: str)
+        }
     } catch {
         print("Failed to write data: \(error.localizedDescription)")
+        return
     }
 }
 
-private func getDocumentsDirectory() -> URL {
-    return URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-}
